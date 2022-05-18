@@ -27,6 +27,27 @@ pub mod myepicproject {
     base_account.total_gifs += 1;
     Ok(())
   }
+
+  pub fn remove_gif(ctx: Context<AddGif>, gif_link: String) -> Result <()> {
+    let base_account = &mut ctx.accounts.base_account;
+    let user = &mut ctx.accounts.user;
+
+    let index_of_gif = base_account.gif_list.iter().position(|x| x.gif_link == gif_link);
+
+    if index_of_gif.is_some() {
+      let index = index_of_gif.unwrap_or(0);
+      msg!("found gif at index {}", index);
+      
+      // remove the entry
+      base_account.gif_list.remove(index);
+      base_account.total_gifs -= 1;
+    }
+    else {
+      msg!("gif not found");
+    }
+    
+    Ok(())
+  }
 }
 
 #[derive(Accounts)]

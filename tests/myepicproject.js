@@ -1,7 +1,7 @@
 const anchor = require('@project-serum/anchor');
 const { SystemProgram } = anchor.web3;
 
-const main = async() => {
+const main = async () => {
   console.log("🚀 Starting test...")
 
   const provider = anchor.AnchorProvider.env();
@@ -20,22 +20,51 @@ const main = async() => {
   console.log("📝 Your transaction signature", tx);
 
   let account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-  console.log('👀 GIF Count', account.totalGifs.toString())
+  console.log('👀 GIF Count', account.totalGifs.toString());
 
-  // You'll need to now pass a GIF link to the function! You'll also need to pass in the user submitting the GIF!
-  await program.rpc.addGif("insert_a_giphy_link_here", {
-    accounts: {
-      baseAccount: baseAccount.publicKey,
-      user: provider.wallet.publicKey,
-    },
-  });
-  
+  for (const i of [1, 2, 3]) {
+    console.log('+ Adding gif ', i);
+    // You'll need to now pass a GIF link to the function! You'll also need to pass in the user submitting the GIF!
+    await program.rpc.addGif("insert_a_giphy_link_here_" + i.toString(), {
+      accounts: {
+        baseAccount: baseAccount.publicKey,
+        user: provider.wallet.publicKey,
+      },
+    });
+  }
+
   // Call the account.
   account = await program.account.baseAccount.fetch(baseAccount.publicKey);
   console.log('👀 GIF Count', account.totalGifs.toString())
 
   // Access gif_list on the account!
   console.log('👀 GIF List', account.gifList)
+
+  // Remove not existed gif
+  console.log('- removing non-existing gif');
+  await program.rpc.removeGif("insert_a_giphy_link_here", {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    },
+  });
+
+  // Remove existing gif
+  console.log('- removing existing gif');
+  await program.rpc.removeGif("insert_a_giphy_link_here_2", {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    },
+  });
+
+  // Call the account.
+  account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+  console.log('👀 GIF Count', account.totalGifs.toString())
+
+  // Access gif_list on the account!
+  console.log('👀 GIF List', account.gifList)
+
 }
 
 const runMain = async () => {
